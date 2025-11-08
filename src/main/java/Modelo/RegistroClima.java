@@ -1,6 +1,5 @@
 package Modelo;
 
-
 public class RegistroClima {
     private String fecha;
     private double temperatura;
