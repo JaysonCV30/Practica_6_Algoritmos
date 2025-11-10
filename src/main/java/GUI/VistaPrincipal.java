@@ -102,12 +102,14 @@ public class VistaPrincipal {
                 return;
             }
 
-            // Actualizar gráfica
             XYChart.Series<String, Number> serie = new XYChart.Series<>();
             serie.setName("Tiempos de ejecución");
 
             for (Map.Entry<String, Long> entry : tiempos.entrySet()) {
-                serie.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+                String etiqueta = entry.getKey() + " (ns: " + entry.getValue() + ")";
+                XYChart.Data<String, Number> punto = new XYChart.Data<>(etiqueta, entry.getValue());
+
+                serie.getData().add(punto);
             }
 
             grafica.getData().clear();
