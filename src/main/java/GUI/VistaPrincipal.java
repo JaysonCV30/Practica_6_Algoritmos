@@ -8,9 +8,10 @@ import Modelo.RegistroClima;
 import Util.CargadorCSV;
 import Util.MedidorTiempo;
 import Logica.MetodosDeOrdenamiento;
+import Logica.MetodosDeOrdenamiento.CampoOrdenable;
 import java.util.*;
 import javafx.geometry.Insets;
-import javafx.scene.chart.LineChart;
+import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -31,74 +32,82 @@ public class VistaPrincipal {
         CheckBox cbRadixSort = new CheckBox("RadixSort");
         CheckBox cbSort = new CheckBox("Sort");
         CheckBox cbParallelSort = new CheckBox("ParallelSort");
-        
-        // combobox para columna a graficas
+
+        // ComboBox para columna a graficar (solo campos numéricos)
         Label tituloOpciones = new Label("Seleccione la columna que desea graficar:");
-        ComboBox <String> comboBox;
-        comboBox = new ComboBox<>();
-        comboBox.getItems().addAll("Summary", "Precip Type", "Temperature", "Apparent Temperature", "Humidity", "Wind Speed", "Wind Bearing", "Visibility", "Pressure");
+        ComboBox<String> comboBox = new ComboBox<>();
+        comboBox.getItems().addAll(
+            "Temperature", "Apparent Temperature", "Humidity",
+            "Wind Speed", "Wind Bearing", "Visibility",
+            "Loud Cover", "Pressure"
+        );
+        comboBox.setValue("Temperature");
 
         VBox seleccionAlgoritmos = new VBox(5, tituloSeleccion, cbQuickSort, cbMergeSort, cbShellSort, cbSeleccion, cbRadixSort, cbSort, cbParallelSort, tituloOpciones, comboBox);
         seleccionAlgoritmos.setPadding(new Insets(10));
         seleccionAlgoritmos.setStyle("-fx-border-color: gray; -fx-border-radius: 5; -fx-padding: 10;");
 
-        // Gráfica de tiempos
+        // Gráfica de barras
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Algoritmo");
 
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Tiempo (ns)");
 
-        LineChart<String, Number> grafica = new LineChart<>(xAxis, yAxis);
+        BarChart<String, Number> grafica = new BarChart<>(xAxis, yAxis);
         grafica.setTitle("Comparación de Tiempos de Ordenamiento");
-        grafica.setLegendVisible(true);
+        grafica.setLegendVisible(false);
         grafica.setAnimated(false);
         grafica.setPrefHeight(600);
 
         // Botón para graficar
         Button btnGraficar = new Button("Graficar");
         btnGraficar.setOnAction(e -> {
+            String seleccion = comboBox.getValue();
+            CampoOrdenable campo = CampoOrdenable.desdeTexto(seleccion);
+            Comparator<RegistroClima> comp = MetodosDeOrdenamiento.getComparador(campo);
+
             Map<String, Long> tiempos = new LinkedHashMap<>();
 
             if (cbQuickSort.isSelected()) {
                 RegistroClima[] copia = registros.toArray(new RegistroClima[0]);
-                long t = MedidorTiempo.medir(() -> MetodosDeOrdenamiento.quickSort(copia));
+                long t = MedidorTiempo.medir(() -> MetodosDeOrdenamiento.quickSort(copia, comp));
                 tiempos.put("QuickSort", t);
             }
 
             if (cbMergeSort.isSelected()) {
                 RegistroClima[] copia = registros.toArray(new RegistroClima[0]);
-                long t = MedidorTiempo.medir(() -> MetodosDeOrdenamiento.mergeSort(copia));
+                long t = MedidorTiempo.medir(() -> MetodosDeOrdenamiento.mergeSort(copia, comp));
                 tiempos.put("MergeSort", t);
             }
 
             if (cbShellSort.isSelected()) {
                 RegistroClima[] copia = registros.toArray(new RegistroClima[0]);
-                long t = MedidorTiempo.medir(() -> MetodosDeOrdenamiento.shellSort(copia));
+                long t = MedidorTiempo.medir(() -> MetodosDeOrdenamiento.shellSort(copia, comp));
                 tiempos.put("ShellSort", t);
             }
 
             if (cbSeleccion.isSelected()) {
                 RegistroClima[] copia = registros.toArray(new RegistroClima[0]);
-                long t = MedidorTiempo.medir(() -> MetodosDeOrdenamiento.seleccionDirecta(copia));
+                long t = MedidorTiempo.medir(() -> MetodosDeOrdenamiento.seleccionDirecta(copia, comp));
                 tiempos.put("Seleccion Directa", t);
             }
 
             if (cbRadixSort.isSelected()) {
                 RegistroClima[] copia = registros.toArray(new RegistroClima[0]);
-                long t = MedidorTiempo.medir(() -> MetodosDeOrdenamiento.radixSort(copia));
+                long t = MedidorTiempo.medir(() -> MetodosDeOrdenamiento.radixSort(copia, comp));
                 tiempos.put("RadixSort", t);
             }
 
             if (cbSort.isSelected()) {
                 RegistroClima[] copia = registros.toArray(new RegistroClima[0]);
-                long t = MedidorTiempo.medir(() -> MetodosDeOrdenamiento.sort(copia));
+                long t = MedidorTiempo.medir(() -> MetodosDeOrdenamiento.sort(copia, comp));
                 tiempos.put("Sort", t);
             }
 
             if (cbParallelSort.isSelected()) {
                 RegistroClima[] copia = registros.toArray(new RegistroClima[0]);
-                long t = MedidorTiempo.medir(() -> MetodosDeOrdenamiento.parallelSort(copia));
+                long t = MedidorTiempo.medir(() -> MetodosDeOrdenamiento.parallelSort(copia, comp));
                 tiempos.put("ParallelSort", t);
             }
 
@@ -109,12 +118,9 @@ public class VistaPrincipal {
             }
 
             XYChart.Series<String, Number> serie = new XYChart.Series<>();
-            serie.setName("Tiempos de ejecución");
 
             for (Map.Entry<String, Long> entry : tiempos.entrySet()) {
-                String etiqueta = entry.getKey() + " (ns: " + entry.getValue() + ")";
-                XYChart.Data<String, Number> punto = new XYChart.Data<>(etiqueta, entry.getValue());
-
+                XYChart.Data<String, Number> punto = new XYChart.Data<>(entry.getKey(), entry.getValue());
                 serie.getData().add(punto);
             }
 

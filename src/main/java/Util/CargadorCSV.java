@@ -13,16 +13,24 @@ public class CargadorCSV {
             br.readLine(); // Saltar encabezado
 
             while ((linea = br.readLine()) != null) {
-                String[] partes = linea.split(",");
+                String[] partes = linea.split(",", -1);
 
-                // Validar que haya al menos 12 columnas
-                if (partes.length >= 12) {
+                if (partes.length >= 11) {
                     try {
-                        double temperatura = Double.parseDouble(partes[3]);
-                        double humedad = Double.parseDouble(partes[5]);
-                        double presion = Double.parseDouble(partes[10]);
+                        double temperature = Double.parseDouble(partes[3]);
+                        double apparentTemperature = Double.parseDouble(partes[4]);
+                        double humidity = Double.parseDouble(partes[5]);
+                        double windSpeed = Double.parseDouble(partes[6]);
+                        double windBearing = Double.parseDouble(partes[7]);
+                        double visibility = Double.parseDouble(partes[8]);
+                        double loudCover = Double.parseDouble(partes[9]);
+                        double pressure = Double.parseDouble(partes[10]);
 
-                        registros.add(new RegistroClima(temperatura, humedad, presion));
+                        registros.add(new RegistroClima(
+                            temperature, apparentTemperature, humidity,
+                            windSpeed, windBearing, visibility,
+                            loudCover, pressure
+                        ));
                     } catch (NumberFormatException e) {
                         System.out.println("Fila ignorada por datos inválidos: " + Arrays.toString(partes));
                     }
