@@ -162,13 +162,13 @@ public class MetodosDeOrdenamiento {
 
     private static void radixSortNegativos(RegistroClima[] arr) {
         RegistroClima[] copia = Arrays.stream(arr)
-            .map(r -> new RegistroClima(r.getFecha(), Math.abs(r.getTemperatura()), r.getHumedad(), r.getPresion()))
+            .map(r -> new RegistroClima(Math.abs(r.getTemperatura()), r.getHumedad(), r.getPresion()))
             .toArray(RegistroClima[]::new);
 
         radixSortPositivos(copia);
 
         for (int i = 0; i < copia.length; i++) {
-            arr[i] = new RegistroClima(copia[i].getFecha(), -copia[i].getTemperatura(), copia[i].getHumedad(), copia[i].getPresion());
+            arr[i] = new RegistroClima(-copia[i].getTemperatura(), copia[i].getHumedad(), copia[i].getPresion());
         }
     }
 

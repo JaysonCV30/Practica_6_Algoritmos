@@ -18,12 +18,11 @@ public class CargadorCSV {
                 // Validar que haya al menos 12 columnas
                 if (partes.length >= 12) {
                     try {
-                        String fecha = partes[0];
                         double temperatura = Double.parseDouble(partes[3]);
                         double humedad = Double.parseDouble(partes[5]);
                         double presion = Double.parseDouble(partes[10]);
 
-                        registros.add(new RegistroClima(fecha, temperatura, humedad, presion));
+                        registros.add(new RegistroClima(temperatura, humedad, presion));
                     } catch (NumberFormatException e) {
                         System.out.println("Fila ignorada por datos inválidos: " + Arrays.toString(partes));
                     }

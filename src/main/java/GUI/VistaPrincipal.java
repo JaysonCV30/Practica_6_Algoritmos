@@ -31,8 +31,14 @@ public class VistaPrincipal {
         CheckBox cbRadixSort = new CheckBox("RadixSort");
         CheckBox cbSort = new CheckBox("Sort");
         CheckBox cbParallelSort = new CheckBox("ParallelSort");
+        
+        // combobox para columna a graficas
+        Label tituloOpciones = new Label("Seleccione la columna que desea graficar:");
+        ComboBox <String> comboBox;
+        comboBox = new ComboBox<>();
+        comboBox.getItems().addAll("Summary", "Precip Type", "Temperature", "Apparent Temperature", "Humidity", "Wind Speed", "Wind Bearing", "Visibility", "Pressure");
 
-        VBox seleccionAlgoritmos = new VBox(5, tituloSeleccion, cbQuickSort, cbMergeSort, cbShellSort, cbSeleccion, cbRadixSort, cbSort, cbParallelSort);
+        VBox seleccionAlgoritmos = new VBox(5, tituloSeleccion, cbQuickSort, cbMergeSort, cbShellSort, cbSeleccion, cbRadixSort, cbSort, cbParallelSort, tituloOpciones, comboBox);
         seleccionAlgoritmos.setPadding(new Insets(10));
         seleccionAlgoritmos.setStyle("-fx-border-color: gray; -fx-border-radius: 5; -fx-padding: 10;");
 
